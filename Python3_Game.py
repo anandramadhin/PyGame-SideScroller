@@ -3,8 +3,6 @@ import time
 import random
 
 pygame.init()
-
-lives = 3
 display_width = 800
 display_height = 600
 
@@ -54,14 +52,12 @@ def text_objects(text, font):
     return textSurf, textSurf.get_rect()
 
 #function to handle crash
-def crash(life):
+def crash(life,dodged):
     if life <= 0:
-        game_over()
+        message_display('GAME OVER')    
+        game_intro()
     message_display('You Crashed!!!')
-
-#game over
-def game_over():
-    message_display('Game Over!!!')
+    game_loop(life,dodged)
 
 def message_display(text):
     largeText = pygame.font.Font('freesansbold.ttf',110)
@@ -73,8 +69,6 @@ def message_display(text):
 
     time.sleep(2)
 
-    game_loop()
-
 def button(msg, x,y,w,h,ic,ac,action=None):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
@@ -85,8 +79,12 @@ def button(msg, x,y,w,h,ic,ac,action=None):
             #button actions
             if action == "play":
                 pygame.mixer.Channel(0).play(pygame.mixer.Sound('Music/Button.wav'))
-                pygame.time.delay(400)                
-                game_loop()
+                pygame.time.delay(400) 
+                #initialize game variables
+                lives = 4
+                dodged = 0
+
+                game_loop(lives, dodged)
             elif action == "quit":
                 pygame.mixer.Channel(0).play(pygame.mixer.Sound('Music/Button.wav'))
                 pygame.time.delay(400)         
@@ -118,13 +116,12 @@ def game_intro():
 
         button("PLAY", 150,450,100,50,green,bright_green,"play")
         button("QUIT", 550,450,100,50,red,bright_red,"quit")
-
         
         pygame.display.update()
         clock.tick(15)
 
 #Game Loop
-def game_loop():
+def game_loop(lives, dodged):
     x = (display_width * 0.45)
     y = (display_height * 0.73)
 
@@ -134,12 +131,10 @@ def game_loop():
     thing_speed = 3
     thing_width = 80
     thing_height = 80
-    dodged = 0
     backgroundX1 = 0
     backgroundY1 = 0
     backgroundX2 = 0
     backgroundY2 = -display_height
-
     pygame.mixer.music.load('Music/Platformer2.wav')
 
 
@@ -187,8 +182,8 @@ def game_loop():
         lives_left(lives)
 
         if x > display_width - car_width or x < 0 :
-            lives = lives -1
-            crash(lives)
+            lives -= 1
+            crash(lives,dodged)
 
         if thing_starty > display_height:
             thing_starty = 0 - thing_height
@@ -203,8 +198,8 @@ def game_loop():
 
             if x > thing_startx and x < thing_startx + thing_width or x + car_width > thing_startx and x + car_width < thing_startx + thing_width:
                 print('x crossover')
-                lives = lives -1
-                crash(lives)
+                lives -=1
+                crash(lives,dodged)
 
         pygame.display.update()
         clock.tick(60)
