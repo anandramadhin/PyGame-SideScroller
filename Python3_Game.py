@@ -18,16 +18,23 @@ gameDisplay = pygame.display.set_mode((display_width,display_height))
 pygame.display.set_caption('A bit Racey')
 clock = pygame.time.Clock()
 
-carImg = pygame.image.load('plane.png')
-carImg = pygame.transform.scale(carImg,(100,160))
-car_width = 100
-car_height = 160
+planeImg = pygame.image.load('plane.png')
+planeImg = pygame.transform.scale(planeImg,(100,160))
+
+enemiesImg = pygame.image.load('Enemies/type_3.png')
+enemiesImg = pygame.transform.scale(enemiesImg,(100,100))
+
+plane_width = 100
+plane_height = 160
+
+enemies_width = 100
+enemies_height = 100
 
 backgroundImg = pygame.image.load('background.png')
 
 
 #score
-def things_dodged(count):
+def enemies_dodged(count):
     font = pygame.font.SysFont('freesansbold.ttf', 25)
     text = font.render("Dodged: "+str(count), True, black)
     gameDisplay.blit(text,(0,0))
@@ -38,13 +45,17 @@ def lives_left(counter):
     text = font.render("Lives: "+str(counter), True, black)
     gameDisplay.blit(text,(100,0))
 
-#create obstacles
-def things(thingx, thingy, thingw, thingh, color):
-    pygame.draw.rect(gameDisplay, color, [thingx, thingy, thingw, thingh])
+#create enemies
+#def enemies(enemiesx, enemiesy, enemiesw, enemiesh, color):
+#    pygame.draw.rect(gameDisplay, color, [enemiesx, enemiesy, enemiesw, enemiesh])
+
+def enemies(x,y):
+    gameDisplay.blit(enemiesImg,(x,y))
+    pygame.display.update()
 
 #function to load car
-def car(x,y):
-    gameDisplay.blit(carImg,(x,y))
+def plane(x,y):
+    gameDisplay.blit(planeImg,(x,y))
     pygame.display.update()
 
 def text_objects(text, font):
@@ -80,8 +91,9 @@ def button(msg, x,y,w,h,ic,ac,action=None):
             if action == "play":
                 pygame.mixer.Channel(0).play(pygame.mixer.Sound('Music/Button.wav'))
                 pygame.time.delay(400) 
+                
                 #initialize game variables
-                lives = 4
+                lives = 3
                 dodged = 0
 
                 game_loop(lives, dodged)
@@ -126,11 +138,11 @@ def game_loop(lives, dodged):
     y = (display_height * 0.73)
 
     x_change = 0
-    thing_startx = random.randrange(0, display_width)
-    thing_starty = -600
-    thing_speed = 3
-    thing_width = 80
-    thing_height = 80
+    enemies_startx = random.randrange(0, display_width)
+    enemies_starty = -600
+    enemies_speed = 3
+    enemies_width = 80
+    enemies_height = 80
     backgroundX1 = 0
     backgroundY1 = 0
     backgroundX2 = 0
@@ -174,29 +186,32 @@ def game_loop(lives, dodged):
         backgroundY1 += 2
         backgroundY2 += 2
 
-        #things(thingx, thingy, thingw, thingh, color)
-        things(thing_startx, thing_starty, thing_width, thing_height, red)
-        thing_starty += thing_speed
-        car(x,y)
-        things_dodged(dodged)
+        #enemies(enemiesx, enemiesy, enemiesw, enemiesh, color):
+        #---enemies(enemies_startx, enemies_starty, enemies_width, enemies_height, red)
+        enemies(enemies_startx, enemies_starty)
+        enemies_starty += enemies_speed
+        
+        #draw plane
+        plane(x,y)
+        enemies_dodged(dodged)
         lives_left(lives)
 
-        if x > display_width - car_width or x < 0 :
+        if x > display_width - plane_width or x < 0 :
             lives -= 1
             crash(lives,dodged)
 
-        if thing_starty > display_height:
-            thing_starty = 0 - thing_height
-            thing_startx = random.randrange(0,display_width)
+        if enemies_starty > display_height:
+            enemies_starty = 0 - enemies_height
+            enemies_startx = random.randrange(0,display_width)
             dodged += 1
             if dodged % 5 == 0:
-                thing_speed +=2
+                enemies_speed +=2
 
 
-        if y < thing_starty + thing_height:
+        if y < enemies_starty + enemies_height:
             print('y crossover')
 
-            if x > thing_startx and x < thing_startx + thing_width or x + car_width > thing_startx and x + car_width < thing_startx + thing_width:
+            if x > enemies_startx and x < enemies_startx + enemies_width or x + plane_width > enemies_startx and x + plane_width < enemies_startx + enemies_width:
                 print('x crossover')
                 lives -=1
                 crash(lives,dodged)
