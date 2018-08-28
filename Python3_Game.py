@@ -21,8 +21,11 @@ clock = pygame.time.Clock()
 planeImg = pygame.image.load('plane.png')
 planeImg = pygame.transform.scale(planeImg,(100,160))
 
-enemiesImg = pygame.image.load('Enemies/type_3.png')
+enemiesImg = pygame.image.load('Enemies/type_1.png')
 enemiesImg = pygame.transform.scale(enemiesImg,(100,100))
+
+Type2EnemiesImg = pygame.image.load('Enemies/type_2.png')
+Type2EnemiesImg = pygame.transform.scale(Type2EnemiesImg,(100,100))
 
 plane_width = 100
 plane_height = 160
@@ -49,9 +52,14 @@ def lives_left(counter):
 #def enemies(enemiesx, enemiesy, enemiesw, enemiesh, color):
 #    pygame.draw.rect(gameDisplay, color, [enemiesx, enemiesy, enemiesw, enemiesh])
 
-def enemies(x,y):
-    gameDisplay.blit(enemiesImg,(x,y))
-    pygame.display.update()
+def enemies(x,y,type):
+    #type corresponds to the number of enemies dodged
+    if type <= 10:
+        gameDisplay.blit(enemiesImg,(x,y))
+        pygame.display.update()
+    if type > 10:
+        gameDisplay.blit(Type2EnemiesImg,(x,y))
+        pygame.display.update()
 
 #function to load car
 def plane(x,y):
@@ -183,7 +191,6 @@ def game_loop(lives, dodged):
     global pause
     pygame.mixer.music.load('Music/Platformer2.wav')
 
-
     pygame.mixer.Channel(1).play(pygame.mixer.Sound('Music/Platformer2.wav'))
     
     gameExit = False
@@ -223,9 +230,8 @@ def game_loop(lives, dodged):
         backgroundY1 += 2
         backgroundY2 += 2
 
-        #enemies(enemiesx, enemiesy, enemiesw, enemiesh, color):
-        #---enemies(enemies_startx, enemies_starty, enemies_width, enemies_height, red)
-        enemies(enemies_startx, enemies_starty)
+        #enemies(enemies_startx, enemies_starty, type)
+        enemies(enemies_startx, enemies_starty,dodged)
         enemies_starty += enemies_speed
         
         #draw plane
