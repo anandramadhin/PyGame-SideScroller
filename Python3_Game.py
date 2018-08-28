@@ -31,7 +31,7 @@ enemies_width = 100
 enemies_height = 100
 
 backgroundImg = pygame.image.load('background.png')
-
+pause = False
 
 #score
 def enemies_dodged(count):
@@ -97,11 +97,15 @@ def button(msg, x,y,w,h,ic,ac,action=None):
                 dodged = 0
 
                 game_loop(lives, dodged)
-            elif action == "quit":
+            if action == "quit":
                 pygame.mixer.Channel(0).play(pygame.mixer.Sound('Music/Button.wav'))
                 pygame.time.delay(400)         
                 pygame.quit()
                 quit()
+            
+            #unpause game after clicking continue
+            if action == "pause":
+                unpause()
     else:
         pygame.draw.rect(gameDisplay,ic,(x,y,w,h))
     
@@ -110,8 +114,37 @@ def button(msg, x,y,w,h,ic,ac,action=None):
     textRect.center = ( (x + (w/2)), (y+(h/2)))
     gameDisplay.blit(textSurf,textRect)
 
+#unPause
+def unpause():
+    global pause
+    pause = False
+
+#Pause
+def paused():
+
+    while pause:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        
+        #gameDisplay.fill(grey)
+        gameDisplay.blit(backgroundImg,(0,0))
+        largeText = pygame.font.Font('freesansbold.ttf',90)
+        TextSurf, TextRect = text_objects("Paused", largeText)
+        TextRect.center = ((display_width/2),(display_height/2))
+        gameDisplay.blit(TextSurf, TextRect)
+
+        button("CONTINUE", 120,450,120,50,green,bright_green,"pause")
+        button("QUIT", 550,450,100,50,red,bright_red,"quit")
+        
+        pygame.display.update()
+        clock.tick(15)
+
+
 #Splash Screen
 def game_intro():
+
     intro = True
     while intro:
         for event in pygame.event.get():
@@ -147,6 +180,7 @@ def game_loop(lives, dodged):
     backgroundY1 = 0
     backgroundX2 = 0
     backgroundY2 = -display_height
+    global pause
     pygame.mixer.music.load('Music/Platformer2.wav')
 
 
@@ -165,8 +199,11 @@ def game_loop(lives, dodged):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
                     x_change = -5
-                elif event.key == pygame.K_RIGHT:
+                if event.key == pygame.K_RIGHT:
                     x_change = 5
+                if event.key == pygame.K_p:
+                    pause = True
+                    paused()
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_LEFT or pygame.K_RIGHT:
