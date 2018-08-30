@@ -48,10 +48,8 @@ def lives_left(counter):
     text = font.render("Lives: "+str(counter), True, black)
     gameDisplay.blit(text,(100,0))
 
-#create enemies
-#def enemies(enemiesx, enemiesy, enemiesw, enemiesh, color):
-#    pygame.draw.rect(gameDisplay, color, [enemiesx, enemiesy, enemiesw, enemiesh])
 
+#create enemies
 def enemies(x,y,type):
     #type corresponds to the number of enemies dodged
     if type <= 10:
@@ -61,7 +59,7 @@ def enemies(x,y,type):
         gameDisplay.blit(Type2EnemiesImg,(x,y))
         pygame.display.update()
 
-#function to load car
+#function to load plane
 def plane(x,y):
     gameDisplay.blit(planeImg,(x,y))
     pygame.display.update()
@@ -70,11 +68,27 @@ def text_objects(text, font):
     textSurf = font.render(text,True, black)
     return textSurf, textSurf.get_rect()
 
+#Game over
+def game_over():
+    largeText = pygame.font.Font('freesansbold.ttf',90)
+    TextSurf, TextRect = text_objects("Game Over!", largeText)
+    TextRect.center = ((display_width/2),(display_height/2))
+    gameDisplay.blit(TextSurf, TextRect)
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        button("PLAY AGAIN", 90,450,130,50,green,bright_green,"play_again")
+        button("QUIT", 550,450,100,50,red,bright_red,"quit")
+        
+        pygame.display.update()
+
 #function to handle crash
 def crash(life,dodged):
     if life <= 0:
-        message_display('GAME OVER')    
-        game_intro()
+        game_over()
     message_display('You Crashed!!!')
     game_loop(life,dodged)
 
@@ -114,6 +128,10 @@ def button(msg, x,y,w,h,ic,ac,action=None):
             #unpause game after clicking continue
             if action == "pause":
                 unpause()
+
+            #Restart game after game over
+            if action == "play_again":
+                game_loop(3,0)
     else:
         pygame.draw.rect(gameDisplay,ic,(x,y,w,h))
     
@@ -136,7 +154,6 @@ def paused():
                 pygame.quit()
                 quit()
         
-        #gameDisplay.fill(grey)
         gameDisplay.blit(backgroundImg,(0,0))
         largeText = pygame.font.Font('freesansbold.ttf',90)
         TextSurf, TextRect = text_objects("Paused", largeText)
@@ -189,9 +206,9 @@ def game_loop(lives, dodged):
     backgroundX2 = 0
     backgroundY2 = -display_height
     global pause
-    pygame.mixer.music.load('Music/Platformer2.wav')
+    #pygame.mixer.music.load('Music/Platformer2.wav')
 
-    pygame.mixer.Channel(1).play(pygame.mixer.Sound('Music/Platformer2.wav'))
+    #pygame.mixer.Channel(1).play(pygame.mixer.Sound('Music/Platformer2.wav'))
     
     gameExit = False
 
@@ -252,10 +269,10 @@ def game_loop(lives, dodged):
 
 
         if y < enemies_starty + enemies_height:
-            print('y crossover')
+            #print('y crossover')
 
             if x > enemies_startx and x < enemies_startx + enemies_width or x + plane_width > enemies_startx and x + plane_width < enemies_startx + enemies_width:
-                print('x crossover')
+                #print('x crossover')
                 lives -=1
                 crash(lives,dodged)
 
