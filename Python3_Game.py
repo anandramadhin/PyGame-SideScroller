@@ -206,9 +206,9 @@ def game_loop(lives, dodged):
     backgroundX2 = 0
     backgroundY2 = -display_height
     global pause
-    #pygame.mixer.music.load('Music/Platformer2.wav')
+    pygame.mixer.music.load('Music/Platformer2.wav')
 
-    #pygame.mixer.Channel(1).play(pygame.mixer.Sound('Music/Platformer2.wav'))
+    pygame.mixer.Channel(1).play(pygame.mixer.Sound('Music/Platformer2.wav'))
     
     gameExit = False
 
